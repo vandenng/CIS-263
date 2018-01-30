@@ -19,6 +19,15 @@ TEST_CASE( "Constructor test", "[creation]" ){
 	CHECK( c.size() == 0 );
 }
 
+TEST_CASE( "Initial Push Test", "[inner]" ){
+	AUDS<int> a;
+
+	for(int i = 0; i < 100; i++)
+		a.push(i);
+
+	CHECK( a.size() == 100 );
+}
+
 TEST_CASE( "Push test", "[inner]" ){
 	AUDS<int> a;
 	for(int i=0; i<1000; i++){
