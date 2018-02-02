@@ -1,9 +1,9 @@
 //Author: Nathan Vanden Hoek
 
 #include <iostream>
-#include <ctime>
 
-#define INITIALSIZE 100
+#define INITIALSIZE 100 // The initial size of the AUDS.
+#define EMPTY -1 //Used to show that there is no item needed to be deleted.
 
 /********************************************************************************************
  *This is an AUDS(Almost Useless Data Structure). An AUDS will hold any type of object,
@@ -19,6 +19,7 @@ class AUDS{
 		 *the current size of the ADUS is set to 0.
 		 *******************************************************************************************/
 		AUDS(){
+			srand((int)time(NULL));	
 			this->data = new T[this->totalSize];
 			this->currentSize = 0;
 		}
@@ -39,7 +40,7 @@ class AUDS{
 			this->totalSize = other.totalSize;
 			this->data = new T[this->currentSize];
 			for(int i = 0; i < this->currentSize; i++)
-				data[i] = other.data[i];
+				this->data[i] = other.data[i];
 		}
 		
 		/********************************************************************************************
@@ -76,20 +77,29 @@ class AUDS{
 		}
 
 		/********************************************************************************************
-		 *This will return a random element in the AUDS and delete it from memory.
+		 *This will return a random element in the AUDS and delete it from AUDS. This is
+		 *done by pointing to the dealted element, and then resizeing the origanal AUDS, and
+		 *returns a reference to the deleted element. If the AUDS is empty, this method will
+		 *throw an error message.
 		 *******************************************************************************************/
 		T& pop(){
 			if(this->currentSize == 0){
-				std::cout << "ERROR: No items in this AUDS!" << std::endl;
-				exit(0);
+				throw "ERROR: Emtpy AUDS"; //This is how I threw exeptions in C & figured it would work here.
 			}
-
-			this->deleted = (rand() % (this->currentSize - 1)) + 0;
-			T* temp = &this->data[deleted];
 			
+			//This will only give a remainder <= to the current size of the AUDS.
+			this->deleted = rand() % (this->currentSize) + 0;
+
+			//Check to see if the element has been deleted before.
+			while(this->data[this->deleted] == T())
+				this->deleted = rand() % (this->currentSize) + 0;
+
+			T* temp = new T[1];
+			temp[0] = *(this->data  + this->deleted);
+	
 			this->resize();
 			this->currentSize--;
-			this->deleted = -1;		
+			this->deleted = EMPTY;		
 	
 			return *temp;
 		}
@@ -97,7 +107,7 @@ class AUDS{
 	private:	
 		int totalSize = INITIALSIZE; //The size of the entire list
 		int currentSize; //the current size of the AUDS
-		int deleted = -1; //The number that will represent the elment to be deleted in the AUDS.
+		int deleted = EMPTY; //The number that will represent the elment to be deleted in the AUDS.
 		T* data; //The data in the AUDS
 
 		/********************************************************************************************
@@ -108,7 +118,7 @@ class AUDS{
 		void resize(){					
 			T* arr = new T[this->totalSize];
 	
-			for(int i = 0; i < this->totalSize; i++){
+			for(int i = 0; i < this->currentSize; i++){
 				if(i != this->deleted) 
 					arr[i] = *(this->data + i);
 			}
